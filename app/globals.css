@@ -1,26 +1,212 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────
+   Design Tokens — RRMS Dark Theme
+   ───────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0b0f17;
+  --foreground: #f8fafc;
+
+  /* Primary accent gradient stops */
+  --accent-from: #6366f1; /* indigo-500 */
+  --accent-to: #38bdf8;   /* cyan-400   */
+
+  /* Text hierarchy */
+  --text-heading: #ffffff;
+  --text-body: #94a3b8;     /* slate-400 */
+  --text-accent: #818cf8;   /* indigo-400 */
+
+  /* Glass surfaces */
+  --glass-surface: rgba(15, 23, 42, 0.55);
+  --glass-surface-hover: rgba(255, 255, 255, 0.10);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
+/* ─────────────────────────────────────────────
+   Tailwind v4 Theme Extension
+   ───────────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Map CSS vars into Tailwind utility tokens */
+  --color-background:    var(--background);
+  --color-foreground:    var(--foreground);
+  --color-accent-from:   var(--accent-from);
+  --color-accent-to:     var(--accent-to);
+  --color-text-heading:  var(--text-heading);
+  --color-text-body:     var(--text-body);
+  --color-text-accent:   var(--text-accent);
+
+  /* Custom palette for Tailwind utilities */
+  --color-obsidian-900:  #0b0f17;
+  --color-obsidian-800:  #111827;
+  --color-obsidian-700:  #1e293b;
+
+  /* Font family tokens */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+               'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+               'Liberation Mono', 'Courier New', monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─────────────────────────────────────────────
+   Base Reset
+   ───────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─────────────────────────────────────────────
+   Glassmorphism Utility Classes
+   ───────────────────────────────────────────── */
+
+/* Primary glass panel — cards, sidebars, modals */
+.glass-card {
+  background: var(--glass-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 0.75rem;
+  transition: background 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.glass-card:hover {
+  background: var(--glass-surface-hover);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Frosted input fields */
+.glass-input {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1rem;
+  width: 100%;
+  transition: all 0.2s ease-in-out;
+}
+
+.glass-input::placeholder {
+  color: #64748b; /* slate-500 */
+}
+
+.glass-input:focus {
+  border-color: rgba(99, 102, 241, 0.60);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+  outline: none;
+}
+
+/* Gradient action button */
+.glass-button {
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.85) 0%,
+    rgba(56, 189, 248, 0.85) 100%
+  );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: 0.5rem;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.glass-button:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+}
+
+.glass-button:active {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.glass-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Ghost / outline variant */
+.glass-button-ghost {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  color: #cbd5e1;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.glass-button-ghost:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.20);
+  color: #ffffff;
+}
+
+/* ─────────────────────────────────────────────
+   Status Badge Variants
+   ───────────────────────────────────────────── */
+.badge-pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.30);
+}
+
+.badge-approved {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.30);
+}
+
+.badge-rejected {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.30);
+}
+
+.badge-cancelled {
+  background: rgba(100, 116, 139, 0.15);
+  color: #94a3b8;
+  border: 1px solid rgba(100, 116, 139, 0.30);
+}
+
+/* ─────────────────────────────────────────────
+   Scrollbar — minimal dark style
+   ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.22); }
+
+/* ─────────────────────────────────────────────
+   Focus-visible ring (accessibility)
+   ───────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.70);
+  outline-offset: 2px;
 }
