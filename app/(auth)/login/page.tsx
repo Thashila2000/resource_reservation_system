@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
-import Link from "next/link";
+import { useActionState, useEffect, useRef } from "react";
 import { loginUser } from "@/lib/actions";
+import { showErrorAlert } from "@/lib/alerts";
 
 export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(
@@ -11,6 +11,16 @@ export default function LoginPage() {
     },
     undefined
   );
+
+  // Show SweetAlert error popup whenever login fails
+  const prevErrorRef = useRef<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (state?.error && state.error !== prevErrorRef.current) {
+      prevErrorRef.current = state.error;
+      showErrorAlert("Login Failed", state.error);
+    }
+  }, [state]);
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0b0f17] px-4">
@@ -41,13 +51,6 @@ export default function LoginPage() {
           <p className="mb-6 text-sm text-slate-400">
             Sign in to access your workspace
           </p>
-
-          {/* Error message */}
-          {state?.error && (
-            <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
-              {state.error}
-            </div>
-          )}
 
           <form action={formAction} className="space-y-4">
             {/* Email */}
@@ -123,15 +126,11 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Footer link */}
-          <p className="mt-6 text-center text-sm text-slate-500">
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/register"
-              className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
-            >
-              Create one
-            </Link>
+          {/* Footer notice */}
+          <p className="mt-6 text-center text-xs text-slate-500">
+            Accounts are registered and provisioned by administrators.
+            <br />
+            Contact your facility manager or IT admin to request access.
           </p>
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { motion } from "framer-motion";
 import {
   Plus,
   Search,
@@ -16,6 +17,7 @@ import { Modal } from "@/components/ui/Modal";
 import { ResourceForm } from "@/components/forms/ResourceForm";
 import { GlassButton } from "@/components/ui/GlassButton";
 import { deleteResource, toggleResourceAvailability } from "@/lib/actions";
+import { confirmDeleteAlert, showToast, showErrorAlert } from "@/lib/alerts";
 
 export interface ResourceItem {
   id: string;
@@ -44,7 +46,6 @@ export function AdminResourcesClient({
   const [editingResource, setEditingResource] = useState<ResourceItem | null>(
     null
   );
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [isPending, startTransition] = useTransition();
@@ -88,16 +89,34 @@ export function AdminResourcesClient({
     setEditingResource(null);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (resource: ResourceItem) => {
+    const confirmed = await confirmDeleteAlert({
+      title: `Delete "${resource.name}"?`,
+      text: `This will permanently delete the resource and all its associated booking history. This action cannot be undone.`,
+      confirmButtonText: "Yes, delete resource",
+      cancelButtonText: "Keep resource",
+    });
+
+    if (!confirmed) return;
+
     startTransition(async () => {
-      await deleteResource(id);
-      setDeleteConfirmId(null);
+      const res = await deleteResource(resource.id);
+      if (res?.error) {
+        showErrorAlert("Delete Failed", res.error);
+      } else {
+        showToast(`"${resource.name}" has been deleted.`, "success");
+      }
     });
   };
 
-  const handleToggle = (id: string, currentStatus: boolean) => {
+  const handleToggle = (resource: ResourceItem) => {
+    const newStatus = !resource.isAvailable;
     startTransition(async () => {
-      await toggleResourceAvailability(id, !currentStatus);
+      await toggleResourceAvailability(resource.id, newStatus);
+      showToast(
+        `"${resource.name}" marked as ${newStatus ? "Available" : "Unavailable"}.`,
+        "info"
+      );
     });
   };
 
@@ -183,9 +202,10 @@ export function AdminResourcesClient({
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredResources.map((res) => (
-            <div
+            <motion.div
               key={res.id}
-              className="glass-card flex flex-col justify-between p-5 transition-all hover:border-white/20"
+              whileHover={{ scale: 1.018, transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1.0] } }}
+              className="glass-card flex flex-col justify-between p-5 will-change-transform"
             >
               <div>
                 {/* Header: Category & Availability Badge */}
@@ -195,7 +215,7 @@ export function AdminResourcesClient({
                   </span>
 
                   <button
-                    onClick={() => handleToggle(res.id, res.isAvailable)}
+                    onClick={() => handleToggle(res)}
                     title="Click to toggle availability"
                     className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold transition-all ${
                       res.isAvailable
@@ -262,34 +282,17 @@ export function AdminResourcesClient({
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
 
-                  {deleteConfirmId === res.id ? (
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => handleDelete(res.id)}
-                        disabled={isPending}
-                        className="rounded-lg bg-red-600/80 px-2 py-1 text-xs font-semibold text-white hover:bg-red-600"
-                      >
-                        Confirm
-                      </button>
-                      <button
-                        onClick={() => setDeleteConfirmId(null)}
-                        className="rounded-lg border border-white/10 px-2 py-1 text-xs text-slate-400 hover:text-white"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setDeleteConfirmId(res.id)}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-400 transition-colors hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400"
-                      title="Delete Resource"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  )}
+                  <button
+                    onClick={() => handleDelete(res)}
+                    disabled={isPending}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-400 transition-colors hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+                    title="Delete Resource"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       )}

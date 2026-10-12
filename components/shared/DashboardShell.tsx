@@ -9,6 +9,7 @@ import {
   Calendar,
   CheckCircle,
   LogOut,
+  Users,
 } from "lucide-react";
 
 interface DashboardShellProps {
@@ -22,6 +23,7 @@ const adminNav = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Resources", href: "/admin/resources", icon: Box },
   { label: "Approvals", href: "/admin/approvals", icon: CheckCircle },
+  { label: "Users", href: "/admin/users", icon: Users },
 ];
 
 const employeeNav = [

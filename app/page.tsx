@@ -52,13 +52,7 @@ export default function HomePage() {
             href="/login"
             className="glass-button inline-flex items-center justify-center px-8 py-3 text-sm font-semibold"
           >
-            Sign In
-          </Link>
-          <Link
-            href="/register"
-            className="glass-button-ghost inline-flex items-center justify-center px-8 py-3 text-sm font-semibold"
-          >
-            Create Account
+            Sign In to System
           </Link>
         </div>
 

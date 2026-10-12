@@ -16,6 +16,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "dotenv": "^18.0.7",
+    "framer-motion": "^14.1.0",
     "lucide-react": "^1.55.0",
     "next": "16.4.0",
     "next-auth": "^5.0.0-beta.32",
@@ -24,6 +25,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "sonner": "^2.0.8",
+    "sweetalert2": "^11.26.25",
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {

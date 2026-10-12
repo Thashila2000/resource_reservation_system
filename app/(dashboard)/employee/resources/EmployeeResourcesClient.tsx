@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Search,
   MapPin,
@@ -157,9 +158,10 @@ export function EmployeeResourcesClient({
       ) : (
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
           {filteredResources.map((res) => (
-            <div
+            <motion.div
               key={res.id}
-              className="glass-card flex flex-col justify-between p-5 transition-all hover:border-white/20"
+              whileHover={{ scale: 1.018, transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1.0] } }}
+              className="glass-card flex flex-col justify-between p-5 will-change-transform"
             >
               <div>
                 {/* Category & Availability Tag */}
@@ -232,7 +234,7 @@ export function EmployeeResourcesClient({
                   {res.isAvailable ? "Reserve Resource" : "Unavailable"}
                 </GlassButton>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       )}

@@ -2,6 +2,7 @@
 
 import { useTransition, useState } from "react";
 import { createResource, updateResource } from "@/lib/actions";
+import { showToast, showErrorAlert } from "@/lib/alerts";
 import { GlassButton } from "@/components/ui/GlassButton";
 
 interface ResourceData {
@@ -53,7 +54,18 @@ export function ResourceForm({
 
       if (res?.error) {
         setError(res.error);
+        showErrorAlert(
+          isEditing ? "Update Failed" : "Create Failed",
+          res.error
+        );
       } else {
+        const name = (formData.get("name") as string) || resource?.name || "Resource";
+        showToast(
+          isEditing
+            ? `"${name}" updated successfully!`
+            : `"${name}" created successfully!`,
+          "success"
+        );
         onSuccess();
       }
     });

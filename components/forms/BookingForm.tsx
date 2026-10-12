@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { createReservation } from "@/lib/actions";
+import { showToast, showErrorAlert } from "@/lib/alerts";
 import { GlassButton } from "@/components/ui/GlassButton";
 import { Calendar, Clock, AlertCircle } from "lucide-react";
 
@@ -25,6 +26,12 @@ export function BookingForm({ resource, onSuccess, onCancel }: BookingFormProps)
   const [bookingDate, setBookingDate] = useState(today);
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("10:00");
+
+  // Compute the minimum allowed start time (current time + 1 min, only for today)
+  const getNowTimeString = () => {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  };
   const [purpose, setPurpose] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -33,6 +40,12 @@ export function BookingForm({ resource, onSuccess, onCancel }: BookingFormProps)
 
     const startDateTime = new Date(`${bookingDate}T${startTime}:00`);
     const endDateTime = new Date(`${bookingDate}T${endTime}:00`);
+
+    // Client-side past-time guard
+    if (startDateTime <= new Date()) {
+      setError("Start time cannot be in the past. Please choose a future date and time.");
+      return;
+    }
 
     if (startDateTime >= endDateTime) {
       setError("End time must be later than start time.");
@@ -49,7 +62,9 @@ export function BookingForm({ resource, onSuccess, onCancel }: BookingFormProps)
       const res = await createReservation(formData);
       if (res?.error) {
         setError(res.error);
+        showErrorAlert("Reservation Failed", res.error);
       } else {
+        showToast(`Reservation for "${resource.name}" submitted for approval!`, "success");
         onSuccess();
       }
     });
@@ -110,6 +125,7 @@ export function BookingForm({ resource, onSuccess, onCancel }: BookingFormProps)
             id="startTime"
             type="time"
             value={startTime}
+            min={bookingDate === today ? getNowTimeString() : undefined}
             onChange={(e) => setStartTime(e.target.value)}
             required
             className="glass-input"

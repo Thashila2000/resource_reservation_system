@@ -10,11 +10,11 @@ import {
   Clock,
   CheckCircle2,
   AlertCircle,
-  ArrowRight,
   MapPin,
   CalendarPlus,
 } from "lucide-react";
 import { GlassButton } from "@/components/ui/GlassButton";
+import { MotionCard } from "@/components/ui/MotionCard";
 
 export const metadata: Metadata = { title: "My Dashboard | PrimeWave RRMS" };
 export const instant = false;
@@ -101,7 +101,7 @@ export default async function EmployeeDashboardPage() {
         {cards.map((card) => {
           const Icon = card.icon;
           return (
-            <div key={card.label} className="glass-card p-5">
+            <MotionCard key={card.label} className="glass-card p-5" zoomScale={1.02}>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                   {card.label}
@@ -113,28 +113,20 @@ export default async function EmployeeDashboardPage() {
                 </div>
               </div>
               <p className="text-3xl font-extrabold text-white">{card.value}</p>
-            </div>
+            </MotionCard>
           );
         })}
       </div>
 
       {/* Upcoming Schedule */}
-      <div className="glass-card p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-base font-bold text-white">
-              Upcoming Reservations
-            </h2>
-            <p className="text-xs text-slate-400">
-              Your next confirmed and pending bookings.
-            </p>
-          </div>
-          <Link
-            href="/employee/my-reservations"
-            className="text-xs font-semibold text-indigo-400 hover:underline flex items-center gap-1"
-          >
-            View all ({totalReservations}) <ArrowRight className="h-3 w-3" />
-          </Link>
+      <div className="glass-card no-hover p-6">
+        <div className="mb-4">
+          <h2 className="text-base font-bold text-white">
+            Upcoming Reservations
+          </h2>
+          <p className="text-xs text-slate-400">
+            Your next confirmed and pending bookings.
+          </p>
         </div>
 
         {upcomingBookings.length === 0 ? (
@@ -153,16 +145,20 @@ export default async function EmployeeDashboardPage() {
             </Link>
           </div>
         ) : (
-          <div className="divide-y divide-white/5">
+          <div className="space-y-3">
             {upcomingBookings.map((item) => (
-              <div
+              <MotionCard
                 key={item.id}
-                className="flex flex-col gap-2 py-3.5 sm:flex-row sm:items-center sm:justify-between"
+                className="reservation-card group flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
+                zoomScale={1.015}
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-white">
+                    <span className="text-sm font-semibold text-white group-hover:text-indigo-200 transition-colors">
                       {item.resource.name}
+                    </span>
+                    <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-medium text-indigo-300">
+                      {item.resource.category}
                     </span>
                     <span
                       className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
@@ -171,7 +167,14 @@ export default async function EmployeeDashboardPage() {
                           : "border border-amber-500/30 bg-amber-500/10 text-amber-400"
                       }`}
                     >
-                      {item.status}
+                      {item.status === "APPROVED" ? (
+                        <span className="inline-flex items-center gap-1">
+                          <CheckCircle2 className="h-2.5 w-2.5" />
+                          Approved
+                        </span>
+                      ) : (
+                        "Pending"
+                      )}
                     </span>
                   </div>
 
@@ -192,21 +195,24 @@ export default async function EmployeeDashboardPage() {
                     </div>
 
                     {item.resource.location && (
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3 text-slate-500" />
-                        <span>{item.resource.location}</span>
-                      </div>
+                      <>
+                        <span>•</span>
+                        <div className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3 text-slate-500" />
+                          <span>{item.resource.location}</span>
+                        </div>
+                      </>
                     )}
                   </div>
                 </div>
 
                 <Link
                   href="/employee/my-reservations"
-                  className="self-start sm:self-auto text-xs text-indigo-400 hover:underline"
+                  className="self-start sm:self-auto rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-colors"
                 >
                   Details →
                 </Link>
-              </div>
+              </MotionCard>
             ))}
           </div>
         )}

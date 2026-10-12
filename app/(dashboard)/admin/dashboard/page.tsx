@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import Link from "next/link";
-import { format } from "date-fns";
 import { prisma } from "@/lib/prisma";
 import {
   Layers,
@@ -9,9 +8,9 @@ import {
   CheckCircle2,
   Users,
   ArrowRight,
-  MapPin,
-  Calendar,
 } from "lucide-react";
+import { AdminDashboardActivityClient } from "./AdminDashboardActivityClient";
+import { MotionCardLink } from "@/components/ui/MotionCard";
 
 export const metadata: Metadata = { title: "Admin Dashboard | PrimeWave RRMS" };
 export const instant = false;
@@ -28,8 +27,11 @@ export default async function AdminDashboardPage() {
     ]);
 
   const recentReservations = await prisma.reservation.findMany({
-    take: 5,
-    orderBy: { createdAt: "desc" },
+    where: {
+      endTime: { gte: new Date() },
+      status: { in: ["APPROVED", "PENDING"] },
+    },
+    orderBy: { startTime: "asc" },
     include: {
       user: {
         select: { name: true, email: true },
@@ -67,7 +69,7 @@ export default async function AdminDashboardPage() {
       value: totalUsers,
       icon: Users,
       color: "from-blue-500 to-indigo-500",
-      href: "/admin/dashboard",
+      href: "/admin/users",
     },
   ];
 
@@ -88,10 +90,10 @@ export default async function AdminDashboardPage() {
         {kpis.map((kpi) => {
           const Icon = kpi.icon;
           return (
-            <Link
+            <MotionCardLink
               key={kpi.label}
               href={kpi.href}
-              className="glass-card group p-5 transition-all hover:border-white/20"
+              className="glass-card group p-5"
             >
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
@@ -109,91 +111,13 @@ export default async function AdminDashboardPage() {
                   View <ArrowRight className="h-3 w-3" />
                 </span>
               </div>
-            </Link>
+            </MotionCardLink>
           );
         })}
       </div>
 
-      {/* Recent Activity Table */}
-      <div className="glass-card p-6">
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <h2 className="text-base font-bold text-white">
-              Recent Reservation Activity
-            </h2>
-            <p className="text-xs text-slate-400">
-              Latest requests submitted by employees.
-            </p>
-          </div>
-          <Link
-            href="/admin/approvals"
-            className="text-xs font-semibold text-indigo-400 hover:underline flex items-center gap-1"
-          >
-            View all requests <ArrowRight className="h-3 w-3" />
-          </Link>
-        </div>
-
-        {recentReservations.length === 0 ? (
-          <p className="text-center text-xs text-slate-500 py-6">
-            No reservations made yet.
-          </p>
-        ) : (
-          <div className="divide-y divide-white/5">
-            {recentReservations.map((item) => (
-              <div
-                key={item.id}
-                className="flex flex-col gap-3 py-3.5 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-white">
-                      {item.resource.name}
-                    </span>
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                        item.status === "APPROVED"
-                          ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                          : item.status === "PENDING"
-                          ? "border border-amber-500/30 bg-amber-500/10 text-amber-400"
-                          : "border border-rose-500/30 bg-rose-500/10 text-rose-400"
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 mt-1">
-                    <span className="text-slate-300">By {item.user.name}</span>
-                    <span>•</span>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3 text-indigo-400" />
-                      <span>
-                        {format(new Date(item.startTime), "MMM d, h:mm a")}
-                      </span>
-                    </div>
-                    {item.resource.location && (
-                      <>
-                        <span>•</span>
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3 text-slate-500" />
-                          <span>{item.resource.location}</span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <Link
-                  href="/admin/approvals"
-                  className="self-start sm:self-auto rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-slate-300 hover:bg-white/10 hover:text-white"
-                >
-                  Manage
-                </Link>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* Reservation Activity with Date Range Calendar Filter */}
+      <AdminDashboardActivityClient reservations={recentReservations} />
     </div>
   );
 }

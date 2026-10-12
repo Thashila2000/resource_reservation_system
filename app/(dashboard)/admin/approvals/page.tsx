@@ -28,9 +28,10 @@ export default async function AdminApprovalsPage() {
         },
       },
     },
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: [
+      { status: "asc" },   // PENDING first (alphabetically APPROVED, CANCELLED, PENDING, REJECTED — so sort by createdAt descending within pending)
+      { createdAt: "desc" },
+    ],
   });
 
   return <AdminApprovalsClient initialReservations={reservations} />;

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { DashboardShell } from "@/components/shared/DashboardShell";
+import { WelcomeToast } from "@/components/ui/WelcomeToast";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -30,7 +32,12 @@ export default async function DashboardLayout({
       userEmail={session.user.email ?? ""}
       userRole={session.user.role}
     >
+      {/* Fires a SweetAlert toast when redirected here after a successful login */}
+      <Suspense fallback={null}>
+        <WelcomeToast />
+      </Suspense>
       {children}
     </DashboardShell>
   );
 }
+
