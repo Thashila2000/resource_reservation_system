@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Resource Reservation Management System (RRMS)
 
-## Getting Started
+> A full stack, enterprise grade Resource Reservation Management System built with **Next.js (App Router)**, **TypeScript**, **Tailwind CSS**, **Prisma ORM**, and **Neon Cloud PostgreSQL**. Features Role Based Access Control (RBAC), real time availability validation, and a modern dark glassmorphism UI.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+##  Key Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+* ** Role Based Access Control (RBAC):** Distinct dashboards and access rules for **Admins** (resource management, request approvals, system analytics) and **Employees** (booking submission, schedule tracking, reservation history).
+* **Dark Glassmorphism UI:** Built with dark theme design tokens, translucent card components, backdrop blur utilities, and smooth motion transitions.
+* **Double-Booking Prevention:** Server side validation routines check time slot overlaps and resource constraints before confirming reservations.
+* **Status & Analytics Tracking:** Interactive monitoring for pending, approved, rejected, and cancelled resource bookings.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Tech Stack
 
-## Learn More
+| Layer | Technology |
+| :--- | :--- |
+| **Framework** | [Next.js](https://nextjs.org/) (App Router, Server Actions) |
+| **Language** | [TypeScript](https://www.typescriptlang.org/) |
+| **Styling** | [Tailwind CSS](https://tailwindcss.com/) (Custom Glassmorphism Utilities) |
+| **Database** | [PostgreSQL](https://postgresql.org/) (Hosted on [Neon](https://neon.tech/)) |
+| **ORM** | [Prisma ORM](https://www.prisma.io/) |
+| **Icons & Motion** | Lucide React, Framer Motion |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+├── app/
+│   ├── (auth)/             # Login & Registration pages
+│   ├── (dashboard)/        # Protected Admin & Employee dashboards
+│   │   ├── admin/          # Resource inventory & approvals queue
+│   │   └── employee/       # Resource catalog & personal bookings
+│   ├── api/auth/           # NextAuth route handlers
+│   └── globals.css         # Glassmorphism utilities & theme tokens
+├── components/
+│   ├── forms/              # Booking & Resource creation forms
+│   ├── shared/             # Role based sidebar & dashboard shell
+│   └── ui/                 # Reusable glass buttons, cards, and modal
+├── lib/
+│   ├── actions.ts          # Server Actions & conflict prevention logic
+│   ├── auth.ts             # Authentication setup & session callbacks
+│   └── prisma.ts           # Prisma client singleton (PostgreSQL)
+├── prisma/
+│   ├── schema.prisma       # Database models (User, Resource, Reservation)
+│   └── seed.ts             # Demo data seed script
+└── proxy.ts                # Next.js 16 RBAC route protection proxy
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+##  Local Development Setup
+
+### Prerequisites
+
+* [Node.js](https://nodejs.org/) (v18.x or higher)
+* [npm](https://www.npmjs.com/) or `pnpm`
+* A [Neon PostgreSQL](https://neon.tech/) database instance
+
