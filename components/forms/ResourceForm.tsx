@@ -13,6 +13,7 @@ interface ResourceData {
   capacity: number | null;
   location: string | null;
   isAvailable: boolean;
+  isUnderMaintenance: boolean;
 }
 
 interface ResourceFormProps {
@@ -24,7 +25,7 @@ interface ResourceFormProps {
 const CATEGORIES = [
   "Conference Room",
   "Lab Hardware",
-  "Vehicle",
+  "Equipment",
   "Specialized Tool",
   "Workspace",
 ];
@@ -188,6 +189,20 @@ export function ResourceForm({
         />
         <label htmlFor="isAvailable" className="text-xs text-slate-300">
           Ready & Available for reservation requests
+        </label>
+      </div>
+
+      {/* Maintenance Mode toggle */}
+      <div className="flex items-center gap-3">
+        <input
+          id="isUnderMaintenance"
+          name="isUnderMaintenance"
+          type="checkbox"
+          defaultChecked={resource ? resource.isUnderMaintenance : false}
+          className="h-4 w-4 rounded border-white/20 bg-white/5 text-amber-500 focus:ring-amber-500/50"
+        />
+        <label htmlFor="isUnderMaintenance" className="text-xs text-amber-300/80">
+          Under Maintenance — blocks all employee reservations
         </label>
       </div>
 

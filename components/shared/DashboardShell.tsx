@@ -53,7 +53,7 @@ export function DashboardShell({
       <aside className="flex w-64 flex-shrink-0 flex-col border-r border-white/5 bg-[rgba(15,23,42,0.55)] backdrop-blur-xl">
         {/* Logo */}
         <div className="flex h-16 items-center gap-2.5 border-b border-white/5 px-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-400">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
             <span className="text-xs font-extrabold text-white">R</span>
           </div>
           <span className="text-base font-bold tracking-tight text-white">
@@ -94,7 +94,7 @@ export function DashboardShell({
         {/* User footer + Sign out */}
         <div className="border-t border-white/5 p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-cyan-400">
+            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-indigo-600">
               <span className="text-xs font-bold text-white">{initials}</span>
             </div>
             <div className="min-w-0 flex-1">

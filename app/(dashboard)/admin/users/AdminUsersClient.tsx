@@ -311,7 +311,7 @@ export function AdminUsersClient({ initialUsers }: AdminUsersClientProps) {
                     {/* User Profile */}
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500/30 to-cyan-500/30 border border-indigo-500/30 text-[11px] font-bold text-white shrink-0">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-[11px] font-bold text-indigo-300 shrink-0">
                           {getInitials(item.name)}
                         </div>
                         <div>

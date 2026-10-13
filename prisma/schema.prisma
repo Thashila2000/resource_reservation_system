@@ -35,12 +35,13 @@ model User {
 model Resource {
   id           String        @id @default(uuid())
   name         String
-  category     String        // e.g., "Conference Room", "Lab Hardware", "Vehicle"
+  category     String        // e.g., "Conference Room", "Lab Hardware", "Equipment"
   description  String?
   capacity     Int?
   location     String?
-  isAvailable  Boolean       @default(true)
-  createdAt    DateTime      @default(now())
+  isAvailable        Boolean       @default(true)
+  isUnderMaintenance Boolean       @default(false)
+  createdAt          DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   reservations Reservation[]
 

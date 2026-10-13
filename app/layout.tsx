@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s | RRMS",
   },
   description:
-    "PrimeWave Lab's centralized platform for managing and reserving shared organizational resources — meeting rooms, lab hardware, and vehicles.",
+    "PrimeWave Lab's centralized platform for managing and reserving shared organizational resources — meeting rooms, lab hardware, and equipment.",
   keywords: ["resource reservation", "booking system", "RRMS", "PrimeWave Lab"],
 };
 

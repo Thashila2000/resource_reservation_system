@@ -24,20 +24,10 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0b0f17] px-4">
-      {/* Ambient orb */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute top-1/4 left-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(99,102,241,0.5) 0%, transparent 70%)",
-        }}
-      />
-
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
         <div className="mb-8 flex items-center justify-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-400">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600">
             <span className="text-lg font-extrabold text-white">R</span>
           </div>
           <span className="text-xl font-bold tracking-tight text-white">

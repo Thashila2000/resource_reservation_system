@@ -301,7 +301,7 @@ export function AdminApprovalsClient({ initialReservations }: AdminApprovalsClie
               onClick={() => setStatusFilter(tab)}
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all whitespace-nowrap ${
                 statusFilter === tab
-                  ? "bg-gradient-to-r from-indigo-500 to-cyan-500 text-white shadow-md shadow-indigo-500/20"
+                  ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/30"
                   : "border border-white/5 bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
               }`}
             >

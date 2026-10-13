@@ -17,7 +17,7 @@ const sizeClasses: Record<Size, string> = {
 };
 
 /**
- * GlassButton — gradient primary action or ghost outline button.
+ * GlassButton — solid primary action or ghost outline button.
  */
 export function GlassButton({
   children,

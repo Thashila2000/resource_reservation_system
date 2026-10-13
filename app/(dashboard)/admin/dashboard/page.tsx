@@ -47,28 +47,28 @@ export default async function AdminDashboardPage() {
       label: "Total Resources",
       value: totalResources,
       icon: Layers,
-      color: "from-indigo-500 to-cyan-500",
+      color: "bg-indigo-600 shadow-indigo-600/20",
       href: "/admin/resources",
     },
     {
       label: "Pending Approvals",
       value: pendingApprovals,
       icon: Clock,
-      color: "from-amber-500 to-orange-500",
+      color: "bg-amber-600 shadow-amber-600/20",
       href: "/admin/approvals",
     },
     {
       label: "Active Bookings",
       value: approvedReservations,
       icon: CheckCircle2,
-      color: "from-emerald-500 to-teal-500",
+      color: "bg-emerald-600 shadow-emerald-600/20",
       href: "/admin/approvals",
     },
     {
       label: "Registered Users",
       value: totalUsers,
       icon: Users,
-      color: "from-blue-500 to-indigo-500",
+      color: "bg-blue-600 shadow-blue-600/20",
       href: "/admin/users",
     },
   ];
@@ -100,7 +100,7 @@ export default async function AdminDashboardPage() {
                   {kpi.label}
                 </span>
                 <div
-                  className={`flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br ${kpi.color} shadow-md shadow-indigo-500/10`}
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg shadow-md ${kpi.color}`}
                 >
                   <Icon className="h-4 w-4 text-white" />
                 </div>

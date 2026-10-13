@@ -20,7 +20,7 @@ export function Header({ title }: { title?: string }) {
           <p className="text-xs font-medium text-white">User</p>
           <p className="text-xs text-slate-500">employee@primewave.com</p>
         </div>
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
           <span className="text-white text-xs font-bold">U</span>
         </div>
       </div>

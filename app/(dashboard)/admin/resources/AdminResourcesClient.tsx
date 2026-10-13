@@ -12,11 +12,12 @@ import {
   Pencil,
   Trash2,
   Layers,
+  Wrench,
 } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceForm } from "@/components/forms/ResourceForm";
 import { GlassButton } from "@/components/ui/GlassButton";
-import { deleteResource, toggleResourceAvailability } from "@/lib/actions";
+import { deleteResource, toggleResourceAvailability, toggleMaintenanceMode } from "@/lib/actions";
 import { confirmDeleteAlert, showToast, showErrorAlert } from "@/lib/alerts";
 
 export interface ResourceItem {
@@ -27,6 +28,7 @@ export interface ResourceItem {
   capacity: number | null;
   location: string | null;
   isAvailable: boolean;
+  isUnderMaintenance: boolean;
   createdAt: Date;
   updatedAt: Date;
   _count?: {
@@ -60,7 +62,7 @@ export function AdminResourcesClient({
     ...Array.from(new Set(initialResources.map((r) => r.category))),
   ];
 
-  const filteredResources = initialResources.filter((r) => {
+  const filteredResources = resources.filter((r) => {
     const matchesSearch =
       r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (r.location &&
@@ -111,12 +113,47 @@ export function AdminResourcesClient({
 
   const handleToggle = (resource: ResourceItem) => {
     const newStatus = !resource.isAvailable;
+    // Optimistic update
+    setResources((prev) =>
+      prev.map((r) => (r.id === resource.id ? { ...r, isAvailable: newStatus } : r))
+    );
     startTransition(async () => {
-      await toggleResourceAvailability(resource.id, newStatus);
-      showToast(
-        `"${resource.name}" marked as ${newStatus ? "Available" : "Unavailable"}.`,
-        "info"
-      );
+      const res = await toggleResourceAvailability(resource.id, newStatus);
+      if (res?.error) {
+        // Revert on failure
+        setResources((prev) =>
+          prev.map((r) => (r.id === resource.id ? { ...r, isAvailable: resource.isAvailable } : r))
+        );
+        showErrorAlert("Update Failed", res.error);
+      } else {
+        showToast(
+          `"${resource.name}" marked as ${newStatus ? "Available" : "Unavailable"}.`,
+          "info"
+        );
+      }
+    });
+  };
+
+  const handleToggleMaintenance = (resource: ResourceItem) => {
+    const newMaintenance = !resource.isUnderMaintenance;
+    // Optimistic update
+    setResources((prev) =>
+      prev.map((r) => (r.id === resource.id ? { ...r, isUnderMaintenance: newMaintenance } : r))
+    );
+    startTransition(async () => {
+      const res = await toggleMaintenanceMode(resource.id, newMaintenance);
+      if (res?.error) {
+        // Revert on failure
+        setResources((prev) =>
+          prev.map((r) => (r.id === resource.id ? { ...r, isUnderMaintenance: resource.isUnderMaintenance } : r))
+        );
+        showErrorAlert("Update Failed", res.error);
+      } else {
+        showToast(
+          `"${resource.name}" ${newMaintenance ? "placed under maintenance — employees cannot reserve it." : "removed from maintenance mode."}`,
+          newMaintenance ? "warning" : "success"
+        );
+      }
     });
   };
 
@@ -165,7 +202,7 @@ export function AdminResourcesClient({
               onClick={() => setSelectedCategory(cat)}
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                 selectedCategory === cat
-                  ? "bg-gradient-to-r from-indigo-500 to-cyan-500 text-white shadow-md shadow-indigo-500/20"
+                  ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/30"
                   : "border border-white/5 bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
               }`}
             >
@@ -208,33 +245,44 @@ export function AdminResourcesClient({
               className="glass-card flex flex-col justify-between p-5 will-change-transform"
             >
               <div>
-                {/* Header: Category & Availability Badge */}
-                <div className="flex items-center justify-between gap-2 mb-3">
+                {/* Header: Category, Maintenance & Availability Badge */}
+                <div className="flex items-start justify-between gap-2 mb-3">
                   <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-[11px] font-medium text-indigo-300">
                     {res.category}
                   </span>
 
-                  <button
-                    onClick={() => handleToggle(res)}
-                    title="Click to toggle availability"
-                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold transition-all ${
-                      res.isAvailable
-                        ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
-                        : "border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20"
-                    }`}
-                  >
-                    {res.isAvailable ? (
-                      <>
-                        <CheckCircle2 className="h-3 w-3" />
-                        Available
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="h-3 w-3" />
-                        Unavailable
-                      </>
+                  <div className="flex flex-col items-end gap-1.5">
+                    {/* Maintenance Badge */}
+                    {res.isUnderMaintenance && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-amber-400">
+                        <Wrench className="h-3 w-3" />
+                        Under Maintenance
+                      </span>
                     )}
-                  </button>
+
+                    {/* Availability Toggle */}
+                    <button
+                      onClick={() => handleToggle(res)}
+                      title="Click to toggle availability"
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold transition-all ${
+                        res.isAvailable
+                          ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+                          : "border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20"
+                      }`}
+                    >
+                      {res.isAvailable ? (
+                        <>
+                          <CheckCircle2 className="h-3 w-3" />
+                          Available
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="h-3 w-3" />
+                          Unavailable
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Name */}
@@ -274,6 +322,20 @@ export function AdminResourcesClient({
                 </span>
 
                 <div className="flex items-center gap-1.5">
+                  {/* Maintenance Toggle */}
+                  <button
+                    onClick={() => handleToggleMaintenance(res)}
+                    disabled={isPending}
+                    title={res.isUnderMaintenance ? "Remove from maintenance" : "Put under maintenance"}
+                    className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border transition-colors disabled:opacity-50 ${
+                      res.isUnderMaintenance
+                        ? "border-amber-500/40 bg-amber-500/15 text-amber-400 hover:bg-amber-500/25"
+                        : "border-white/10 bg-white/5 text-slate-400 hover:border-amber-500/30 hover:bg-amber-500/10 hover:text-amber-400"
+                    }`}
+                  >
+                    <Wrench className="h-3.5 w-3.5" />
+                  </button>
+
                   <button
                     onClick={() => handleOpenEdit(res)}
                     className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-300 transition-colors hover:bg-white/10 hover:text-white"

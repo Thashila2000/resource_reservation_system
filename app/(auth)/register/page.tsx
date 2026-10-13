@@ -4,20 +4,10 @@ import { ShieldAlert, ArrowLeft } from "lucide-react";
 export default function RegisterPage() {
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0b0f17] px-4">
-      {/* Ambient orb */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-1/4 right-1/3 h-[400px] w-[400px] rounded-full opacity-15"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(99,102,241,0.5) 0%, transparent 70%)",
-        }}
-      />
-
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
         <div className="mb-8 flex items-center justify-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-400 shadow-lg shadow-indigo-500/20">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 shadow-lg shadow-indigo-600/20">
             <span className="text-lg font-extrabold text-white">R</span>
           </div>
           <span className="text-xl font-bold tracking-tight text-white">

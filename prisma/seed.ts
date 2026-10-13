@@ -71,16 +71,64 @@ async function main() {
           isAvailable: true,
         },
         {
-          name: "PrimeWave Electric Transport Van",
-          category: "Vehicle",
-          description: "Zero-emission cargo transit vehicle for inter-lab equipment transfers.",
-          capacity: 3,
-          location: "East Parking Bay #12",
+          name: "Asus ExpertBook B9 (Unit 1)",
+          category: "Equipment",
+          description: "Lightweight business laptop with Intel Core i7, 16GB RAM, 512GB SSD, ideal for fieldwork and presentations.",
+          capacity: 1,
+          location: "IT Storage Room, Shelf A",
+          isAvailable: true,
+        },
+        {
+          name: "Asus ExpertBook B9 (Unit 2)",
+          category: "Equipment",
+          description: "Lightweight business laptop with Intel Core i7, 16GB RAM, 512GB SSD, ideal for fieldwork and presentations.",
+          capacity: 1,
+          location: "IT Storage Room, Shelf A",
+          isAvailable: true,
+        },
+        {
+          name: "Asus ExpertBook B9 (Unit 3)",
+          category: "Equipment",
+          description: "Lightweight business laptop with Intel Core i7, 16GB RAM, 512GB SSD, ideal for fieldwork and presentations.",
+          capacity: 1,
+          location: "IT Storage Room, Shelf A",
+          isAvailable: true,
+        },
+        {
+          name: "Smart Board Pro (Unit 1)",
+          category: "Equipment",
+          description: "75-inch 4K interactive display with multi-touch support and wireless screen sharing for collaborative sessions.",
+          capacity: 1,
+          location: "Training Room C, Building B",
+          isAvailable: true,
+        },
+        {
+          name: "Smart Board Pro (Unit 2)",
+          category: "Equipment",
+          description: "75-inch 4K interactive display with multi-touch support and wireless screen sharing for collaborative sessions.",
+          capacity: 1,
+          location: "Conference Room 301, Building A",
+          isAvailable: true,
+        },
+        {
+          name: "Epson PowerLite Projector (Unit 1)",
+          category: "Equipment",
+          description: "3600-lumen WUXGA laser projector with HDMI and wireless connectivity, suitable for large presentations.",
+          capacity: 1,
+          location: "AV Equipment Closet, Building A",
+          isAvailable: true,
+        },
+        {
+          name: "Epson PowerLite Projector (Unit 2)",
+          category: "Equipment",
+          description: "3600-lumen WUXGA laser projector with HDMI and wireless connectivity, suitable for large presentations.",
+          capacity: 1,
+          location: "AV Equipment Closet, Building B",
           isAvailable: true,
         },
       ],
     });
-    console.log("Seeded 5 initial PrimeWave resources.");
+    console.log("Seeded 11 initial PrimeWave resources.");
   } else {
     console.log(`Resources already present (${resourceCount} found).`);
   }

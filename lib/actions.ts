@@ -132,6 +132,7 @@ export async function createResource(formData: FormData) {
   const capacity = capacityRaw ? parseInt(capacityRaw, 10) : null;
   const location = (formData.get("location") as string) || null;
   const isAvailable = formData.get("isAvailable") === "true" || formData.get("isAvailable") === "on";
+  const isUnderMaintenance = formData.get("isUnderMaintenance") === "true" || formData.get("isUnderMaintenance") === "on";
 
   if (!name || !category) {
     return { error: "Name and Category are required." };
@@ -146,6 +147,7 @@ export async function createResource(formData: FormData) {
         capacity: Number.isNaN(capacity) ? null : capacity,
         location,
         isAvailable,
+        isUnderMaintenance,
       },
     });
 
@@ -175,6 +177,7 @@ export async function updateResource(id: string, formData: FormData) {
   const capacity = capacityRaw ? parseInt(capacityRaw, 10) : null;
   const location = (formData.get("location") as string) || null;
   const isAvailable = formData.get("isAvailable") === "true" || formData.get("isAvailable") === "on";
+  const isUnderMaintenance = formData.get("isUnderMaintenance") === "true" || formData.get("isUnderMaintenance") === "on";
 
   if (!name || !category) {
     return { error: "Name and Category are required." };
@@ -190,6 +193,7 @@ export async function updateResource(id: string, formData: FormData) {
         capacity: Number.isNaN(capacity) ? null : capacity,
         location,
         isAvailable,
+        isUnderMaintenance,
       },
     });
 
@@ -253,6 +257,33 @@ export async function toggleResourceAvailability(id: string, isAvailable: boolea
 }
 
 /**
+ * Admin action: Toggle maintenance mode of a resource.
+ * Resources under maintenance cannot be booked by employees.
+ */
+export async function toggleMaintenanceMode(id: string, isUnderMaintenance: boolean) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") {
+    return { error: "Unauthorized. Admin privileges required." };
+  }
+
+  try {
+    await prisma.resource.update({
+      where: { id },
+      data: { isUnderMaintenance },
+    });
+
+    revalidatePath("/admin/resources");
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/employee/resources");
+    revalidatePath("/employee/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to toggle maintenance mode:", error);
+    return { error: "Failed to update maintenance status." };
+  }
+}
+
+/**
  * Create a new reservation with conflict detection.
  */
 export async function createReservation(formData: FormData) {
@@ -294,6 +325,10 @@ export async function createReservation(formData: FormData) {
 
   if (!resource) {
     return { error: "Resource not found." };
+  }
+
+  if (resource.isUnderMaintenance) {
+    return { error: "This resource is currently under maintenance and cannot be reserved. Please check back later or contact the administrator." };
   }
 
   if (!resource.isAvailable) {
