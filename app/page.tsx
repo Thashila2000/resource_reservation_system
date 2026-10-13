@@ -25,7 +25,7 @@ export default function HomePage() {
 
         <p className="max-w-lg text-base leading-relaxed text-slate-400 sm:text-lg">
           PrimeWave Lab&apos;s centralized platform for managing meeting rooms,
-          lab hardware, and equipment — schedule smarter, avoid conflicts.
+          lab hardware, and equipments schedule smarter, avoid conflicts.
         </p>
 
         {/* CTA buttons */}
@@ -41,9 +41,9 @@ export default function HomePage() {
         {/* Feature chips */}
         <div className="mt-4 flex flex-wrap justify-center gap-3">
           {[
-            "Real-time Availability",
+            "Real time Availability",
             "Conflict Prevention",
-            "Role-based Access",
+            "Role based Access",
             "Instant Approvals",
           ].map((feat) => (
             <span
@@ -58,7 +58,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="absolute bottom-6 text-xs text-slate-600">
-        © 2026 PrimeWave Lab — All rights reserved.
+        © 2026 PrimeWave Lab All rights reserved.
       </footer>
     </div>
   );

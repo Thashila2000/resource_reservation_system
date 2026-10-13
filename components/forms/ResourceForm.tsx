@@ -18,7 +18,7 @@ interface ResourceData {
 
 interface ResourceFormProps {
   resource?: ResourceData | null;
-  onSuccess: () => void;
+  onSuccess: (resource?: any) => void;
   onCancel: () => void;
 }
 
@@ -67,7 +67,7 @@ export function ResourceForm({
             : `"${name}" created successfully!`,
           "success"
         );
-        onSuccess();
+        onSuccess(res?.resource);
       }
     });
   };

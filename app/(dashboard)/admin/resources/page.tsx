@@ -8,14 +8,49 @@ export const instant = false;
 
 export default async function AdminResourcesPage() {
   await connection();
-  const resources = await prisma.resource.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      _count: {
-        select: { reservations: true },
-      },
-    },
-  });
 
-  return <AdminResourcesClient initialResources={resources} />;
+  const [resources, complaints] = await Promise.all([
+    prisma.resource.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        _count: {
+          select: {
+            reservations: true,
+            complaints: {
+              where: { status: { in: ["OPEN", "IN_PROGRESS"] } },
+            },
+          },
+        },
+      },
+    }),
+    prisma.complaint.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        resource: {
+          select: {
+            id: true,
+            name: true,
+            category: true,
+            location: true,
+            isUnderMaintenance: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            department: true,
+          },
+        },
+      },
+    }),
+  ]);
+
+  return (
+    <AdminResourcesClient
+      initialResources={resources}
+      initialComplaints={complaints}
+    />
+  );
 }

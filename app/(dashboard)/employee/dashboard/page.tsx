@@ -9,10 +9,12 @@ import {
   Clock,
   CheckCircle2,
   CalendarPlus,
+  Wrench,
 } from "lucide-react";
 import { GlassButton } from "@/components/ui/GlassButton";
 import { MotionCard } from "@/components/ui/MotionCard";
 import { EmployeeDashboardUpcomingClient } from "./EmployeeDashboardUpcomingClient";
+import { EmployeeDashboardMaintenanceClient } from "./EmployeeDashboardMaintenanceClient";
 
 export const metadata: Metadata = { title: "My Dashboard | PrimeWave RRMS" };
 export const instant = false;
@@ -27,27 +29,54 @@ export default async function EmployeeDashboardPage() {
 
   const userId = session.user.id;
 
-  const [totalReservations, approvedCount, pendingCount, upcomingBookings] =
-    await Promise.all([
-      prisma.reservation.count({ where: { userId } }),
-      prisma.reservation.count({ where: { userId, status: "APPROVED" } }),
-      prisma.reservation.count({ where: { userId, status: "PENDING" } }),
-      prisma.reservation.findMany({
-        where: {
-          endTime: { gte: new Date() },
-          status: { in: ["APPROVED", "PENDING", "CANCELLED"] },
+  const [
+    totalReservations,
+    approvedCount,
+    pendingCount,
+    upcomingBookings,
+    maintenanceResources,
+  ] = await Promise.all([
+    prisma.reservation.count({ where: { userId } }),
+    prisma.reservation.count({ where: { userId, status: "APPROVED" } }),
+    prisma.reservation.count({ where: { userId, status: "PENDING" } }),
+    prisma.reservation.findMany({
+      where: {
+        endTime: { gte: new Date() },
+        status: { in: ["APPROVED", "PENDING", "CANCELLED"] },
+      },
+      include: {
+        user: {
+          select: { id: true, name: true, email: true },
         },
-        include: {
-          user: {
-            select: { id: true, name: true, email: true },
-          },
-          resource: {
-            select: { id: true, name: true, category: true, location: true },
-          },
+        resource: {
+          select: { id: true, name: true, category: true, location: true },
         },
-        orderBy: { startTime: "asc" },
-      }),
-    ]);
+      },
+      orderBy: { startTime: "asc" },
+    }),
+    prisma.resource.findMany({
+      where: { isUnderMaintenance: true },
+      select: {
+        id: true,
+        name: true,
+        category: true,
+        location: true,
+        description: true,
+        updatedAt: true,
+        complaints: {
+          where: { status: { in: ["OPEN", "IN_PROGRESS"] } },
+          select: {
+            id: true,
+            title: true,
+            severity: true,
+            adminNotes: true,
+          },
+          take: 1,
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
+  ]);
 
   const cards = [
     {
@@ -68,6 +97,12 @@ export default async function EmployeeDashboardPage() {
       icon: Clock,
       color: "bg-amber-600 shadow-amber-600/20",
     },
+    {
+      label: "In Maintenance",
+      value: maintenanceResources.length,
+      icon: Wrench,
+      color: maintenanceResources.length > 0 ? "bg-amber-600 shadow-amber-600/20" : "bg-slate-700 shadow-slate-700/20",
+    },
   ];
 
   return (
@@ -79,7 +114,7 @@ export default async function EmployeeDashboardPage() {
             Welcome back, {session.user.name?.split(" ")[0] ?? "Member"}
           </h1>
           <p className="text-sm text-slate-400">
-            Manage your schedule, track approval statuses, and request new lab spaces.
+            Manage your schedule, track approval statuses, and review active lab equipment availability.
           </p>
         </div>
 
@@ -96,7 +131,7 @@ export default async function EmployeeDashboardPage() {
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((card) => {
           const Icon = card.icon;
           return (
@@ -116,6 +151,9 @@ export default async function EmployeeDashboardPage() {
           );
         })}
       </div>
+
+      {/* Currently Under Maintenance Resources */}
+      <EmployeeDashboardMaintenanceClient resources={maintenanceResources} />
 
       {/* Upcoming Schedule for All Employees */}
       <EmployeeDashboardUpcomingClient

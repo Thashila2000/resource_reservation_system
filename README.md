@@ -59,3 +59,8 @@
 * [npm](https://www.npmjs.com/) or `pnpm`
 * A [Neon PostgreSQL](https://neon.tech/) database instance
 
+### 1. Clone the Repository
+
+```bash
+git clone [https://github.com/Thashila2000/resource_reservation_system.git](https://github.com/Thashila2000/resource_reservation_system.git)
+cd resource_reservation_system

@@ -139,7 +139,7 @@ export async function createResource(formData: FormData) {
   }
 
   try {
-    await prisma.resource.create({
+    const resource = await prisma.resource.create({
       data: {
         name,
         category,
@@ -149,12 +149,17 @@ export async function createResource(formData: FormData) {
         isAvailable,
         isUnderMaintenance,
       },
+      include: {
+        _count: {
+          select: { reservations: true },
+        },
+      },
     });
 
     revalidatePath("/admin/resources");
     revalidatePath("/admin/dashboard");
     revalidatePath("/employee/resources");
-    return { success: true };
+    return { success: true, resource };
   } catch (error) {
     console.error("Failed to create resource:", error);
     return { error: "Failed to create resource. Please try again." };
@@ -184,7 +189,7 @@ export async function updateResource(id: string, formData: FormData) {
   }
 
   try {
-    await prisma.resource.update({
+    const resource = await prisma.resource.update({
       where: { id },
       data: {
         name,
@@ -195,12 +200,17 @@ export async function updateResource(id: string, formData: FormData) {
         isAvailable,
         isUnderMaintenance,
       },
+      include: {
+        _count: {
+          select: { reservations: true },
+        },
+      },
     });
 
     revalidatePath("/admin/resources");
     revalidatePath("/admin/dashboard");
     revalidatePath("/employee/resources");
-    return { success: true };
+    return { success: true, resource };
   } catch (error) {
     console.error("Failed to update resource:", error);
     return { error: "Failed to update resource. Please try again." };
@@ -657,6 +667,145 @@ export async function adminDeleteUser(userId: string) {
   } catch (error) {
     console.error("Failed to delete user:", error);
     return { error: "Failed to delete user. Please try again." };
+  }
+}
+
+/**
+ * Employee / User action: Submit a damage complaint or issue report for a resource.
+ */
+export async function submitComplaint(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { error: "You must be signed in to submit a damage or issue report." };
+  }
+
+  const resourceId = (formData.get("resourceId") as string)?.trim();
+  const title = (formData.get("title") as string)?.trim();
+  const category = (formData.get("category") as string)?.trim() || "Physical Damage";
+  const severityRaw = (formData.get("severity") as string)?.trim() || "MEDIUM";
+  const description = (formData.get("description") as string)?.trim();
+
+  if (!resourceId || !title || !description) {
+    return { error: "Resource, issue title, and description are required." };
+  }
+
+  const validSeverities = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
+  const severity = validSeverities.includes(severityRaw) ? severityRaw : "MEDIUM";
+
+  try {
+    const complaint = await prisma.complaint.create({
+      data: {
+        resourceId,
+        userId: session.user.id,
+        title,
+        category,
+        severity: severity as any,
+        description,
+        status: "OPEN",
+      },
+      include: {
+        resource: {
+          select: {
+            id: true,
+            name: true,
+            category: true,
+            location: true,
+            isUnderMaintenance: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            department: true,
+          },
+        },
+      },
+    });
+
+    revalidatePath("/admin/resources");
+    revalidatePath("/employee/resources");
+    revalidatePath("/admin/dashboard");
+    return { success: true, complaint };
+  } catch (error) {
+    console.error("Failed to submit complaint:", error);
+    return { error: "Failed to submit damage report. Please try again." };
+  }
+}
+
+/**
+ * Admin action: Update status and optional resolution notes of a complaint.
+ */
+export async function updateComplaintStatus(
+  complaintId: string,
+  status: "OPEN" | "IN_PROGRESS" | "RESOLVED" | "DISMISSED",
+  adminNotes?: string
+) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") {
+    return { error: "Unauthorized. Admin privileges required." };
+  }
+
+  try {
+    const complaint = await prisma.complaint.update({
+      where: { id: complaintId },
+      data: {
+        status,
+        adminNotes: adminNotes !== undefined ? adminNotes : undefined,
+      },
+      include: {
+        resource: {
+          select: {
+            id: true,
+            name: true,
+            category: true,
+            location: true,
+            isUnderMaintenance: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            department: true,
+          },
+        },
+      },
+    });
+
+    revalidatePath("/admin/resources");
+    revalidatePath("/employee/resources");
+    revalidatePath("/admin/dashboard");
+    return { success: true, complaint };
+  } catch (error) {
+    console.error("Failed to update complaint status:", error);
+    return { error: "Failed to update report status." };
+  }
+}
+
+/**
+ * Admin action: Delete a complaint.
+ */
+export async function deleteComplaint(complaintId: string) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") {
+    return { error: "Unauthorized. Admin privileges required." };
+  }
+
+  try {
+    await prisma.complaint.delete({
+      where: { id: complaintId },
+    });
+
+    revalidatePath("/admin/resources");
+    revalidatePath("/employee/resources");
+    revalidatePath("/admin/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete complaint:", error);
+    return { error: "Failed to delete report." };
   }
 }
 
