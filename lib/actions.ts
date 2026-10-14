@@ -20,13 +20,13 @@ export async function adminRegisterUser(formData: FormData) {
   const name = (formData.get("name") as string)?.trim();
   const email = (formData.get("email") as string)?.trim().toLowerCase();
   const password = formData.get("password") as string;
-  const department = ((formData.get("department") as string)?.trim()) || null;
+  const department = (formData.get("department") as string)?.trim();
   const roleInput = formData.get("role") as string;
   const role = roleInput === "ADMIN" ? "ADMIN" : "EMPLOYEE";
 
   // Basic validation
-  if (!name || !email || !password) {
-    return { error: "Full Name, Email, and Password are required." };
+  if (!name || !email || !password || !department) {
+    return { error: "Full Name, Email, Password, and Department are required." };
   }
 
   if (password.length < 6) {
@@ -583,13 +583,13 @@ export async function adminUpdateUser(userId: string, formData: FormData) {
 
   const name = (formData.get("name") as string)?.trim();
   const email = (formData.get("email") as string)?.trim().toLowerCase();
-  const department = ((formData.get("department") as string)?.trim()) || null;
+  const department = (formData.get("department") as string)?.trim();
   const roleInput = formData.get("role") as string;
   const role = roleInput === "ADMIN" ? "ADMIN" : "EMPLOYEE";
   const password = (formData.get("password") as string)?.trim();
 
-  if (!name || !email) {
-    return { error: "Name and email are required." };
+  if (!name || !email || !department) {
+    return { error: "Name, email, and department are required." };
   }
 
   // Check if another user has this email

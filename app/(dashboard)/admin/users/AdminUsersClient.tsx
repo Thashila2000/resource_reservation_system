@@ -30,6 +30,16 @@ export interface UserDirectoryItem {
   createdAt: Date;
 }
 
+export const DEPARTMENTS = [
+  "Engineering",
+  "Quality Assurance",
+  "Product & Design",
+  "IT & Operations",
+  "Facility & IT",
+  "Human Resources",
+  "Sales & Marketing",
+] as const;
+
 interface AdminUsersClientProps {
   initialUsers: UserDirectoryItem[];
 }
@@ -44,7 +54,7 @@ export function AdminUsersClient({ initialUsers }: AdminUsersClientProps) {
   const [registerForm, setRegisterForm] = useState({
     name: "",
     email: "",
-    department: "",
+    department: DEPARTMENTS[0] as string,
     role: "EMPLOYEE" as "EMPLOYEE" | "ADMIN",
     password: "",
   });
@@ -83,7 +93,7 @@ export function AdminUsersClient({ initialUsers }: AdminUsersClientProps) {
     setRegisterForm({
       name: "",
       email: "",
-      department: "",
+      department: DEPARTMENTS[0],
       role: "EMPLOYEE",
       password: "",
     });
@@ -133,7 +143,7 @@ export function AdminUsersClient({ initialUsers }: AdminUsersClientProps) {
     setEditForm({
       name: user.name,
       email: user.email,
-      department: user.department || "",
+      department: user.department || DEPARTMENTS[0],
       role: user.role,
       password: "",
     });
@@ -439,15 +449,26 @@ export function AdminUsersClient({ initialUsers }: AdminUsersClientProps) {
           {/* Department */}
           <div>
             <label className="mb-1 block text-xs font-medium text-slate-300">
-              Department <span className="text-slate-500">(Optional)</span>
+              Department *
             </label>
-            <input
-              type="text"
-              placeholder="e.g. Engineering, Research, Operations"
+            <select
+              required
               value={registerForm.department}
-              onChange={(e) => setRegisterForm({ ...registerForm, department: e.target.value })}
-              className="glass-input"
-            />
+              onChange={(e) =>
+                setRegisterForm({ ...registerForm, department: e.target.value })
+              }
+              className="glass-input cursor-pointer"
+            >
+              {DEPARTMENTS.map((dept) => (
+                <option
+                  key={dept}
+                  value={dept}
+                  className="bg-slate-900 text-white"
+                >
+                  {dept}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Role */}
@@ -563,15 +584,37 @@ export function AdminUsersClient({ initialUsers }: AdminUsersClientProps) {
           {/* Department */}
           <div>
             <label className="mb-1 block text-xs font-medium text-slate-300">
-              Department <span className="text-slate-500">(Optional)</span>
+              Department *
             </label>
-            <input
-              type="text"
-              placeholder="e.g. Engineering, Research, Operations"
+            <select
+              required
               value={editForm.department}
-              onChange={(e) => setEditForm({ ...editForm, department: e.target.value })}
-              className="glass-input"
-            />
+              onChange={(e) =>
+                setEditForm({ ...editForm, department: e.target.value })
+              }
+              className="glass-input cursor-pointer"
+            >
+              {editForm.department &&
+                !DEPARTMENTS.includes(
+                  editForm.department as (typeof DEPARTMENTS)[number]
+                ) && (
+                  <option
+                    value={editForm.department}
+                    className="bg-slate-900 text-white"
+                  >
+                    {editForm.department}
+                  </option>
+                )}
+              {DEPARTMENTS.map((dept) => (
+                <option
+                  key={dept}
+                  value={dept}
+                  className="bg-slate-900 text-white"
+                >
+                  {dept}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Role */}

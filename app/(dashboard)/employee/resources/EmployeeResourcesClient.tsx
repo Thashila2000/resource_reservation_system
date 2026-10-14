@@ -226,15 +226,7 @@ export function EmployeeResourcesClient({
           </p>
         </div>
 
-        <GlassButton
-          onClick={() => handleOpenReport()}
-          variant="ghost"
-          size="sm"
-          className="inline-flex items-center gap-2 self-start sm:self-auto border-rose-500/30 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20"
-        >
-          <AlertTriangle className="h-4 w-4 text-rose-400" />
-          Report Damage / Issue
-        </GlassButton>
+       
       </div>
 
       {/* Tabs */}
@@ -529,12 +521,7 @@ export function EmployeeResourcesClient({
               <p className="text-xs text-slate-400 mt-1 max-w-sm">
                 Notice broken furniture, faulty electronics, or missing gear? Use the damage reporting form to notify administrators immediately.
               </p>
-              <button
-                onClick={() => handleOpenReport()}
-                className="mt-4 rounded-lg bg-rose-600/20 border border-rose-500/30 px-3.5 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-600/30"
-              >
-                File an Issue Report
-              </button>
+             
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4">
