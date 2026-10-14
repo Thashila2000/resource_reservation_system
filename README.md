@@ -6,10 +6,11 @@
 
 ##  Key Features
 
-*** Role Based Access Control (RBAC):** Distinct dashboards and access rules for **Admins** (resource management, request approvals, system analytics) and **Employees** (booking submission, schedule tracking, reservation history).
-* **Dark Glassmorphism UI:** Built with dark theme design tokens, translucent card components, backdrop blur utilities, and smooth motion transitions.
-* **Double-Booking Prevention:** Server side validation routines check time slot overlaps and resource constraints before confirming reservations.
-* **Status & Analytics Tracking:** Interactive monitoring for pending, approved, rejected, and cancelled resource bookings.
+- **Role Based Access Control (RBAC):** Distinct dashboards and access rules for **Admins** (resource management, request approvals, system analytics) and **Employees** (booking submission, schedule tracking, reservation history).
+- **Dark Glassmorphism UI:** Built with dark theme design tokens, translucent card components, backdrop blur utilities, and smooth motion transitions.
+- **Double Booking Prevention:** Server side validation routines check time slot overlaps and resource constraints before confirming reservations.
+- **Damage & Issue Reporting:** Empowers employees to submit reports for equipment damage, hardware malfunctions, or facility issues directly linked to specific resources.
+- **Status & Analytics Tracking:** Interactive monitoring for pending, approved, rejected, and cancelled resource bookings.
 
 ---
 
